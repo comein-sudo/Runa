@@ -149,6 +149,29 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (message_id, user_id)
   );
+  CREATE TABLE IF NOT EXISTS emoji_packs (
+  id TEXT PRIMARY KEY,
+  owner_id TEXT NOT NULL,
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT DEFAULT '',
+  official INTEGER DEFAULT 0,
+  is_public INTEGER DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS emojis (
+  id TEXT PRIMARY KEY,
+  pack_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  file_url TEXT NOT NULL,
+  keywords TEXT DEFAULT '',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(pack_id, name)
+);
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_emojis_pack ON emojis(pack_id);
+  CREATE INDEX IF NOT EXISTS idx_emoji_packs_owner ON emoji_packs(owner_id);
+`);
 `);
 
 const ensureColumn = (table, column, definition) => {
